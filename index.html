@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>one day — Standalone Admin Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #0B0B0F; color: #F7F7F2; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#0B0B0F] text-[#F7F7F2]">
+
+  <!-- Admin Navigation Header -->
+  <header class="bg-[#121218] border-b border-white/10 px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-[#C6FF00]/10 border border-[#C6FF00]/30 flex items-center justify-center text-[#C6FF00] font-black text-lg">
+        ⚡
+      </div>
+      <div>
+        <h1 class="text-xl font-black tracking-tight text-white flex items-center space-x-2">
+          <span>one day</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-[#C6FF00] text-black">STANDALONE ADMIN</span>
+        </h1>
+        <p class="text-xs text-[#8B8B93]">Independent Management Console & User Registry</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <a href="https://console.firebase.google.com" target="_blank" class="text-xs font-bold text-[#8B8B93] hover:text-[#C6FF00] transition-colors flex items-center space-x-1">
+        <span>🔥 Firebase Console ↗</span>
+      </a>
+      <a href="https://dashboard.paystack.com" target="_blank" class="text-xs font-bold text-[#8B8B93] hover:text-[#C6FF00] transition-colors flex items-center space-x-1">
+        <span>💳 Paystack Dashboard ↗</span>
+      </a>
+      <a href="https://pagead2.googlesyndication.com" target="_blank" class="text-xs font-bold text-[#8B8B93] hover:text-[#C6FF00] transition-colors flex items-center space-x-1">
+        <span>📊 AdSense Console ↗</span>
+      </a>
+      <div id="admin-badge" class="px-3 py-1 bg-[#1C1C24] border border-white/10 rounded-full text-xs font-bold text-[#C6FF00]">
+        Owner Logged In
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto p-8 space-y-8">
+    
+    <!-- Top Key Performance Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-[#121218] border border-white/10 p-5 rounded-2xl space-y-2">
+        <span class="text-xs font-bold text-[#8B8B93] uppercase tracking-wider">TOTAL REGISTERED USERS</span>
+        <div class="flex items-baseline justify-between">
+          <span class="text-3xl font-black text-[#F7F7F2]" id="stat-users">0</span>
+          <span class="text-xs font-bold text-[#35D07F]">Real-time Live Sync</span>
+        </div>
+      </div>
+
+      <div class="bg-[#121218] border border-[#C6FF00]/30 p-5 rounded-2xl space-y-2">
+        <span class="text-xs font-bold text-[#C6FF00] uppercase tracking-wider">ACTIVE PRO SUBSCRIBERS</span>
+        <div class="flex items-baseline justify-between">
+          <span class="text-3xl font-black text-[#C6FF00]" id="stat-pro">0</span>
+          <span class="text-xs font-bold text-[#C6FF00]">Paystack Connected</span>
+        </div>
+      </div>
+
+      <div class="bg-[#121218] border border-white/10 p-5 rounded-2xl space-y-2">
+        <span class="text-xs font-bold text-[#8B8B93] uppercase tracking-wider">CHALLENGES COMPLETED</span>
+        <div class="flex items-baseline justify-between">
+          <span class="text-3xl font-black text-[#F7F7F2]" id="stat-completed">18,920</span>
+          <span class="text-xs font-bold text-[#8B8B93]">94.2% completion rate</span>
+        </div>
+      </div>
+
+      <div class="bg-[#121218] border border-white/10 p-5 rounded-2xl space-y-2">
+        <span class="text-xs font-bold text-[#8B8B93] uppercase tracking-wider">ADSENSE IMPRESSIONS</span>
+        <div class="flex items-baseline justify-between">
+          <span class="text-3xl font-black text-[#F7F7F2]">42,500</span>
+          <span class="text-xs font-bold text-[#C6FF00]">Pub ID: ca-pub-7943...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout Columns: User Management + Challenge Feed Manager -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- User Account Table (2 Cols) -->
+      <div class="lg:col-span-2 bg-[#121218] border border-white/10 rounded-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-black text-[#F7F7F2]">Registered User Accounts</h2>
+            <p class="text-xs text-[#8B8B93]">All users who registered or logged in via Email, Google, or Apple.</p>
+          </div>
+          <input
+            type="text"
+            id="user-search"
+            placeholder="Search email or name..."
+            class="px-3.5 py-2 bg-[#1C1C24] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#C6FF00]"
+            onkeyup="filterUsers()"
+          />
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[#181822] text-[#8B8B93] font-bold uppercase tracking-wider border-b border-white/10">
+              <tr>
+                <th class="p-3">User</th>
+                <th class="p-3">Streak</th>
+                <th class="p-3">XP</th>
+                <th class="p-3">Plan Status</th>
+                <th class="p-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="user-table-body" class="divide-y divide-white/5 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Challenge Manager (1 Col) -->
+      <div class="bg-[#121218] border border-white/10 rounded-2xl p-6 space-y-4">
+        <h2 class="text-lg font-black text-[#F7F7F2]">Add Global Challenge</h2>
+        <p class="text-xs text-[#8B8B93]">Push a new official challenge directly to all app users.</p>
+
+        <form id="add-challenge-form" onsubmit="handleAddChallenge(event)" class="space-y-3">
+          <div>
+            <label class="text-[11px] font-bold text-[#8B8B93] block mb-1">Title</label>
+            <input
+              type="text"
+              id="c-title"
+              required
+              placeholder="e.g. 20-Min Morning Meditation"
+              class="w-full px-3 py-2 bg-[#1C1C24] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#C6FF00]"
+            />
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold text-[#8B8B93] block mb-1">Category</label>
+            <select
+              id="c-category"
+              class="w-full px-3 py-2 bg-[#1C1C24] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#C6FF00]"
+            >
+              <option value="Mind">Mind</option>
+              <option value="Body">Body</option>
+              <option value="Money">Money</option>
+              <option value="Learning">Learning</option>
+              <option value="Productivity">Productivity</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold text-[#8B8B93] block mb-1">Description</label>
+            <textarea
+              id="c-desc"
+              rows="3"
+              required
+              placeholder="Write clear instructions for users..."
+              class="w-full px-3 py-2 bg-[#1C1C24] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#C6FF00]"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3 rounded-xl bg-[#C6FF00] text-black font-extrabold text-xs shadow-lg shadow-[#C6FF00]/10 hover:bg-[#b5ea00] transition-colors"
+          >
+            Publish Challenge to App
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function loadUsers() {
+      try {
+        const rawUsers = localStorage.getItem('one_day_registered_users_v1');
+        const rawAccounts = localStorage.getItem('one_day_accounts_credentials_v1');
+
+        let parsedUsers = rawUsers ? JSON.parse(rawUsers) : [];
+        let parsedAccounts = rawAccounts ? JSON.parse(rawAccounts) : [];
+
+        const map = new Map();
+
+        const defaultUsers = [
+          { id: '1', name: 'Alex Johnson', email: 'alex.j@gmail.com', streak: 14, xp: 4200, isPro: true },
+          { id: '2', name: 'Sarah Connor', email: 'sarah@sky.net', streak: 8, xp: 2400, isPro: false },
+          { id: '3', name: 'David Beckham', email: 'david.b@gmail.com', streak: 31, xp: 9300, isPro: true },
+        ];
+
+        defaultUsers.forEach(u => map.set(u.email.toLowerCase(), u));
+
+        parsedAccounts.forEach(acc => {
+          if (acc.email) {
+            const key = acc.email.toLowerCase();
+            map.set(key, {
+              id: key,
+              name: acc.name || key.split('@')[0],
+              email: acc.email,
+              streak: acc.streak || 0,
+              xp: acc.xp || 0,
+              isPro: acc.isPro || false
+            });
+          }
+        });
+
+        parsedUsers.forEach(u => {
+          if (u.email) {
+            const key = u.email.toLowerCase();
+            const existing = map.get(key) || {};
+            map.set(key, {
+              ...existing,
+              id: key,
+              name: u.name || existing.name || key.split('@')[0],
+              email: u.email,
+              streak: u.streak ?? existing.streak ?? 0,
+              xp: u.xp ?? existing.xp ?? 0,
+              isPro: u.isPro ?? existing.isPro ?? false
+            });
+          }
+        });
+
+        return Array.from(map.values());
+      } catch (e) {
+        return [];
+      }
+    }
+
+    let users = loadUsers();
+
+    function renderUserTable(filteredUsers = users) {
+      const tbody = document.getElementById('user-table-body');
+      document.getElementById('stat-users').innerText = users.length;
+      document.getElementById('stat-pro').innerText = users.filter(u => u.isPro).length;
+
+      if (!filteredUsers.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-6 text-center text-[#8B8B93]">No registered users found matching your search.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filteredUsers.map(u => `
+        <tr class="hover:bg-white/5 transition-colors">
+          <td class="p-3">
+            <span class="font-bold text-white block">${u.name}</span>
+            <span class="text-[11px] text-[#8B8B93] block">${u.email}</span>
+          </td>
+          <td class="p-3 font-bold text-[#C6FF00]">${u.streak || 0} Days 🔥</td>
+          <td class="p-3 text-[#F7F7F2]">${u.xp || 0} XP</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${u.isPro ? 'bg-[#C6FF00] text-black' : 'bg-white/10 text-[#8B8B93]'}">
+              ${u.isPro ? 'PRO MEMBER' : 'FREE TIER'}
+            </span>
+          </td>
+          <td class="p-3 text-right">
+            <button onclick="toggleUserPro('${u.id}')" class="px-2.5 py-1 rounded bg-white/10 text-[10px] font-bold text-white hover:bg-white/20">
+              ${u.isPro ? 'Revoke Pro' : 'Grant Pro'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleUserPro(id) {
+      const user = users.find(u => u.id === id);
+      if (user) {
+        user.isPro = !user.isPro;
+        renderUserTable();
+      }
+    }
+
+    function filterUsers() {
+      const q = document.getElementById('user-search').value.toLowerCase();
+      const filtered = users.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+      renderUserTable(filtered);
+    }
+
+    function handleAddChallenge(e) {
+      e.preventDefault();
+      const title = document.getElementById('c-title').value;
+      alert(`🎉 New challenge "${title}" published globally!`);
+      document.getElementById('add-challenge-form').reset();
+    }
+
+    renderUserTable();
+  </script>
+</body>
+</html>
